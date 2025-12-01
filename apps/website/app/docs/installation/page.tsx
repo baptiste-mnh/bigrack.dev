@@ -35,11 +35,9 @@ export default function InstallationPage() {
       <section className="mb-12">
         <h2 className="mb-4 text-3xl font-semibold">Installation via npm</h2>
         <p className="mb-4 text-lg">Install BigRack globally on your machine:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>npm install -g @bigrack/mcp</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>npm install -g @bigrack/mcp</code>
+        </pre>
         <p className="mb-4 text-lg">
           This installation includes the MCP server and CLI to manage your racks and projects.
         </p>
@@ -51,17 +49,15 @@ export default function InstallationPage() {
           You can install BigRack directly from the GitHub repository by cloning only the MCP
           package folder:
         </p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>
-              {`git clone --filter=blob:none --sparse https://github.com/baptiste-mnh/bigrack.dev.git
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>
+            {`git clone --filter=blob:none --sparse https://github.com/baptiste-mnh/bigrack.dev.git
 cd bigrack
 git sparse-checkout set packages/mcp
 cd packages/mcp
 npm install -g .`}
-            </code>
-          </pre>
-        </div>
+          </code>
+        </pre>
         <p className="mb-4 text-lg">
           This will install the latest version from the GitHub repository. The{' '}
           <code className="text-sm bg-gray-100 px-2 py-1 rounded">npm install -g .</code> command
@@ -75,33 +71,25 @@ npm install -g .`}
         </p>
 
         <h3 className="mb-3 text-xl font-semibold">1. Clone the repository</h3>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>git clone https://github.com/baptiste-mnh/bigrack.dev.git{'\n'}cd bigrack</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>git clone https://github.com/baptiste-mnh/bigrack.dev.git{'\n'}cd bigrack</code>
+        </pre>
 
         <h3 className="mb-3 text-xl font-semibold">2. Install dependencies</h3>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>npm install</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>npm install</code>
+        </pre>
 
         <h3 className="mb-3 text-xl font-semibold">3. Build the project</h3>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>npm run build</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>npm run build</code>
+        </pre>
 
         <h3 className="mb-3 text-xl font-semibold">4. Link globally</h3>
         <p className="mb-4 text-lg">To use the local version as a global command:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>npm run link:mcp</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>npm run link:mcp</code>
+        </pre>
         <p className="mb-4 text-lg">
           Now you can use the <code className="text-sm bg-gray-100 px-2 py-1 rounded">bigrack</code>{' '}
           command from anywhere. To unlink later, use{' '}
@@ -110,11 +98,9 @@ npm install -g .`}
 
         <h3 className="mb-3 text-xl font-semibold">Development Mode</h3>
         <p className="mb-4 text-lg">For active development with auto-rebuild on changes:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>npm run dev:mcp</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>npm run dev:mcp</code>
+        </pre>
         <p className="mb-4 text-lg">
           This watches for file changes and automatically rebuilds the package.
         </p>
@@ -127,11 +113,9 @@ npm install -g .`}
         <p className="mb-4 text-lg">
           First, initialize BigRack globally on your machine (run once per machine):
         </p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack init</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack init</code>
+        </pre>
         <p className="mb-4 text-lg">
           This sets up the BigRack database, downloads the embedding model, and creates the
           configuration directory (~/.bigrack/).
@@ -154,16 +138,14 @@ npm install -g .`}
         <p className="mb-4 text-lg">
           During initialization, BigRack downloads the vector embedding model (~80MB):
         </p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>
-              {`🔍 Vector:      ✅ Ready
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>
+            {`🔍 Vector:      ✅ Ready
              Model: Xenova/all-MiniLM-L6-v2
              Dim: 384
              Size: ~22.6 MB`}
-            </code>
-          </pre>
-        </div>
+          </code>
+        </pre>
         <p className="mb-4 text-lg">
           This model enables semantic search over your business context. It runs entirely locally
           with no external API calls.
@@ -175,11 +157,9 @@ npm install -g .`}
 
         <h3 className="mb-3 text-xl font-semibold">Automatic Configuration</h3>
         <p className="mb-4 text-lg">To integrate BigRack with Claude Desktop, use:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack setup-claude</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack setup-claude</code>
+        </pre>
         <p className="mb-4 text-lg">
           This command automatically configures Claude Desktop to use BigRack as an MCP server.
         </p>
@@ -202,9 +182,8 @@ npm install -g .`}
             </code>
           </li>
         </ul>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm overflow-x-auto">
-            {`{
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          {`{
   "mcpServers": {
     "bigrack": {
       "command": "npx",
@@ -212,8 +191,7 @@ npm install -g .`}
     }
   }
 }`}
-          </pre>
-        </div>
+        </pre>
         <p className="mb-4 text-lg">
           <strong>Important</strong>: Restart Claude Desktop after configuration for changes to take
           effect.
@@ -223,11 +201,9 @@ npm install -g .`}
       <section className="mb-12">
         <h2 className="mb-4 text-3xl font-semibold">Integration with Cursor</h2>
         <p className="mb-4 text-lg">To integrate BigRack with Cursor:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack setup-cursor</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack setup-cursor</code>
+        </pre>
         <p className="mb-4 text-lg">
           This configures Cursor to use BigRack as an MCP server. Restart Cursor after
           configuration.
@@ -237,11 +213,9 @@ npm install -g .`}
       <section className="mb-12">
         <h2 className="mb-4 text-3xl font-semibold">Verification</h2>
         <p className="mb-4 text-lg">Verify your installation:</p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack --version</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack --version</code>
+        </pre>
         <p className="mb-4 text-lg">
           You should see the BigRack version and a confirmation that the MCP server is ready.
         </p>

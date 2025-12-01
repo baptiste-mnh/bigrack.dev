@@ -30,9 +30,9 @@ export default function GettingStartedPage() {
         <p className="mb-3">
           Want to see your projects and tasks visually? Start the dashboard with this command:
         </p>
-        <div className="p-3 rounded-lg border mb-3">
+        <pre className="p-3 rounded-lg border mb-3 text-sm text-gray-900 font-mono overflow-x-auto">
           <code>bigrack gui start</code>
-        </div>
+        </pre>
         <p className="mb-4 text-lg">
           The dashboard opens automatically in your browser. Perfect for exploring your repos,
           projects, and tasks visually.
@@ -44,11 +44,9 @@ export default function GettingStartedPage() {
         <p className="mb-4 text-lg">
           First things first—let&apos;s set up BigRack on your machine. This is a one-time thing:
         </p>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack init</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack init</code>
+        </pre>
         <p className="mb-4 text-lg">
           This sets up the BigRack database and downloads the embedding model (~80MB).
         </p>
@@ -226,11 +224,9 @@ export default function GettingStartedPage() {
         </div>
 
         <h3 className="mb-3 text-xl font-semibold">Via CLI</h3>
-        <div className="p-4 rounded-lg bg-gray-100 border mb-4">
-          <pre className="text-sm">
-            <code>bigrack status</code>
-          </pre>
-        </div>
+        <pre className="p-4 rounded-lg bg-gray-100 border mb-4 text-sm text-gray-900 font-mono overflow-x-auto">
+          <code>bigrack status</code>
+        </pre>
         <p className="mb-4 text-lg">
           You can also use{' '}
           <code className="text-sm bg-gray-100 px-2 py-1 rounded">bigrack ticket next</code> to get
