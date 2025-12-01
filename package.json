@@ -37,6 +37,8 @@
     "licenses:add:shadcn": "license-check-and-add add -f licenses/.licenserc.shadcn.json apps/dashboard/src/components/ui apps/website/components/ui packages/shared/src/components/ui",
     "licenses:check": "license-check-and-add check -f licenses/.licenserc.json",
     "licenses:check:shadcn": "license-check-and-add check -f licenses/.licenserc.shadcn.json apps/dashboard/src/components/ui apps/website/components/ui packages/shared/src/components/ui",
+    "package:mcp:build": "npm run build:mcp && cd packages/mcp && npm pack",
+    "package:mcp:push": "npm run build:mcp && cd packages/mcp && npm publish --access public",
     "changeset": "changeset",
     "changeset:add": "changeset add",
     "changeset:version": "changeset version",

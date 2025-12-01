@@ -15,6 +15,9 @@
     "LICENSE",
     "THIRD-PARTY-LICENSES.md"
   ],
+  "bundledDependencies": [
+    "@bigrack/shared"
+  ],
   "scripts": {
     "build": "npm run prisma:generate && tsc && npm run copy:scripts && npm run copy:prisma",
     "copy:scripts": "mkdir -p dist/scripts && cp src/scripts/*.js dist/scripts/ 2>/dev/null || true",
@@ -98,6 +101,7 @@
   },
   "devDependencies": {
     "@bigrack/config": "*",
+    "@bigrack/shared": "*",
     "@eslint/eslintrc": "^3.3.1",
     "@types/better-sqlite3": "^7.6.8",
     "@types/express": "^5.0.5",
