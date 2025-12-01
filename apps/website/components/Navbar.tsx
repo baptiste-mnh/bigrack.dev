@@ -14,6 +14,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { GitHubLogoIcon, FileTextIcon } from '@radix-ui/react-icons';
 
 interface NavbarProps {
   variant?: 'default' | 'docs';
@@ -37,29 +38,48 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
             />
             <span className="text-xl font-logo font-semibold text-foreground">BigRack.dev</span>
           </Link>
-          <div className="flex items-center gap-6">
+
+          <div className="flex items-center gap-4">
+            {/* Documentation - Desktop only */}
             <Link
               href="/docs"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden md:inline-block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Documentation
             </Link>
+
+            {/* Dashboard - Desktop only */}
             <Link
               href="https://dashboard.bigrack.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden md:inline-block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
-            <Link
-              href="https://github.com/baptiste-mnh/bigrack.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-            >
-              GitHub
-            </Link>
+
+            {/* Icons - visible on all screens */}
+            <div className="flex items-center gap-2">
+              {/* Documentation icon - Mobile only */}
+              <Link
+                href="/docs"
+                className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/5"
+                aria-label="Documentation"
+              >
+                <FileTextIcon className="h-5 w-5" />
+              </Link>
+
+              {/* GitHub icon - All screens */}
+              <Link
+                href="https://github.com/baptiste-mnh/bigrack.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/5"
+                aria-label="GitHub"
+              >
+                <GitHubLogoIcon className="h-5 w-5" />
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
