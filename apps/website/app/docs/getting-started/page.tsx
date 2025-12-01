@@ -30,7 +30,7 @@ export default function GettingStartedPage() {
         <p className="mb-3">
           Want to see your projects and tasks visually? Start the dashboard with this command:
         </p>
-        <pre className="p-3 rounded-lg border mb-3 text-sm text-gray-900 font-mono overflow-x-auto">
+        <pre className="p-3 rounded-lg border mb-3 text-sm  bg-gray-100  text-gray-900 font-mono overflow-x-auto">
           <code>bigrack gui start</code>
         </pre>
         <p className="mb-4 text-lg">

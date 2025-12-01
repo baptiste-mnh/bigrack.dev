@@ -12,6 +12,9 @@
  * limitations under the License.
  */
 
+import { Button } from '@bigrack/shared';
+import Link from 'next/link';
+
 export default function DocsPage() {
   return (
     <>
@@ -133,18 +136,8 @@ export default function DocsPage() {
         <h2 className="mb-4 text-3xl font-semibold font-title">Next steps</h2>
         <p className="mb-4 text-lg">Ready to get started? Check out our quick start guide:</p>
         <div className="flex gap-4">
-          <a
-            href="/docs/getting-started"
-            className="inline-flex items-center px-6 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-          >
-            Quick Start Guide →
-          </a>
-          <a
-            href="/docs/concepts"
-            className="inline-flex items-center px-6 py-3 rounded-md border border-input bg-background font-medium hover:bg-accent transition-colors"
-          >
-            Core Concepts →
-          </a>
+          <Link href="/docs/getting-started">Quick Start Guide</Link>
+          <Link href="/docs/concepts">Core Concepts</Link>
         </div>
       </section>
     </>
