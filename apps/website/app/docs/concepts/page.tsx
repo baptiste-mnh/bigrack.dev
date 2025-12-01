@@ -35,7 +35,7 @@ export default function ConceptsPage() {
 
         <div className="mb-6 p-6 rounded-lg border bg-gray-50">
           <h3 className="mb-3 text-xl font-semibold">Hierarchical architecture</h3>
-          <pre className="p-4 rounded bg-white border text-sm overflow-x-auto">
+          <pre className="p-4 rounded bg-white border text-sm overflow-x-auto text-gray-900 font-mono">
             {`BigRack Installation
 │
 ├── Repo: "E-commerce Platform"
