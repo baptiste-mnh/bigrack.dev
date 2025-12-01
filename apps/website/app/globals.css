@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* BigRack Brand Colors */
+    --rack: 195 22% 52%; /* #6f9299 - Main structural color (adjusted) */
+    --pallet: 38 28% 36%; /* #766744 - Organizational grouping (adjusted) */
+    --box: 38 62% 68%; /* #ddb87a - Individual tasks (adjusted) */
+
+    /* Beige Minimalist Theme */
+    --background: 42 18% 94%; /* #f4f1ea - Warm cream/beige */
+    --foreground: 220 14% 18%; /* #272d38 - Dark blue-gray text */
+
+    /* Card & Popover */
+    --card: 0 0% 100%; /* Pure white for cards */
+    --card-foreground: 220 14% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 18%;
+
+    /* Semantic Colors - Using BigRack palette */
+    --primary: 30 65% 68%; /* Warm orange accent - darker and more orange */
+    --primary-foreground: 220 14% 18%;
+    --secondary: 38 28% 36%; /* pallet */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 30 65% 68%; /* Warm orange accent - darker and more orange */
+    --accent-foreground: 220 14% 18%;
+
+    /* Muted */
+    --muted: 40 12% 90%; /* Slightly warm gray */
+    --muted-foreground: 220 8% 46%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 40 10% 86%; /* Warm border color */
+    --input: 40 10% 86%;
+    --ring: 30 65% 68%; /* Warm orange accent - darker and more orange */
+
+    /* Border Radius */
+    --radius: 0.625rem;
+
+    /* Charts - Using BigRack palette */
+    --chart-1: 195 22% 52%; /* rack */
+    --chart-2: 38 28% 36%; /* pallet */
+    --chart-3: 38 62% 68%; /* box */
+    --chart-4: 195 35% 42%; /* darker rack */
+    --chart-5: 38 75% 58%; /* vibrant box */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes gradient-x {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-gradient-x {
+    background-size: 200% auto;
+    animation: gradient-x 3s linear infinite;
+  }
+}

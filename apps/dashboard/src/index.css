@@ -1,0 +1,850 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Font Variables */
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-serif: 'Libre Baskerville', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', Consolas, monospace;
+    --font-logo: 'Space Grotesk', system-ui, sans-serif;
+
+    /* BigRack Brand Colors */
+    --rack: 195 22% 52%; /* #6f9299 - Main structural color */
+    --pallet: 38 28% 36%; /* #766744 - Organizational grouping */
+    --box: 38 62% 68%; /* #ddb87a - Individual tasks */
+
+    /* Beige Minimalist Theme */
+    --background: 42 18% 94%; /* #f4f1ea - Warm cream/beige */
+    --foreground: 220 14% 18%; /* #272d38 - Dark blue-gray text */
+
+    /* Card & Popover */
+    --card: 0 0% 100%; /* Pure white for cards */
+    --card-foreground: 220 14% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 18%;
+
+    /* Semantic Colors - Using BigRack palette */
+    --primary: 30 65% 68%; /* Warm orange accent */
+    --primary-foreground: 220 14% 18%;
+    --secondary: 38 28% 36%; /* pallet */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 30 65% 68%; /* Warm orange accent */
+    --accent-foreground: 220 14% 18%;
+
+    /* Muted */
+    --muted: 40 12% 90%; /* Slightly warm gray */
+    --muted-foreground: 220 8% 46%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 40 10% 86%; /* Warm border color */
+    --input: 40 10% 86%;
+    --ring: 30 65% 68%; /* Warm orange accent */
+
+    /* Border Radius */
+    --radius: 0.625rem;
+
+    /* Charts - Using BigRack palette */
+    --chart-1: 195 22% 52%; /* rack */
+    --chart-2: 38 28% 36%; /* pallet */
+    --chart-3: 38 62% 68%; /* box */
+    --chart-4: 195 35% 42%; /* darker rack */
+    --chart-5: 38 75% 58%; /* vibrant box */
+
+    /* Sidebar Colors - Beige theme */
+    --sidebar-background: 42 15% 96%; /* Light cream */
+    --sidebar-foreground: 220 14% 18%;
+    --sidebar-primary: 30 65% 68%;
+    --sidebar-primary-foreground: 220 14% 18%;
+    --sidebar-accent: 40 12% 92%;
+    --sidebar-accent-foreground: 220 14% 18%;
+    --sidebar-border: 40 10% 88%;
+    --sidebar-ring: 30 65% 68%;
+  }
+
+  .dark {
+    /* Font Variables */
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-serif: 'Libre Baskerville', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', Consolas, monospace;
+    --font-logo: 'Space Grotesk', system-ui, sans-serif;
+
+    /* BigRack Brand Colors (same in dark mode) */
+    --rack: 195 22% 52%;
+    --pallet: 38 28% 36%;
+    --box: 38 62% 68%;
+
+    /* Dark Mode Base Colors */
+    --background: 220 14% 10%; /* Dark blue-gray */
+    --foreground: 42 18% 94%; /* Warm cream text */
+
+    /* Card & Popover */
+    --card: 220 14% 14%;
+    --card-foreground: 42 18% 94%;
+    --popover: 220 14% 16%;
+    --popover-foreground: 42 18% 94%;
+
+    /* Semantic Colors - Using BigRack palette */
+    --primary: 30 65% 68%; /* Warm orange accent */
+    --primary-foreground: 220 14% 18%;
+    --secondary: 38 28% 45%; /* lighter pallet for dark mode */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 30 65% 68%; /* Warm orange accent */
+    --accent-foreground: 220 14% 18%;
+
+    /* Muted */
+    --muted: 220 14% 18%;
+    --muted-foreground: 220 8% 60%;
+
+    /* Destructive */
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 220 14% 22%;
+    --input: 220 14% 22%;
+    --ring: 30 65% 68%;
+
+    /* Charts - Using BigRack palette with adjustments */
+    --chart-1: 195 30% 60%; /* lighter rack */
+    --chart-2: 38 40% 50%; /* lighter pallet */
+    --chart-3: 38 70% 75%; /* lighter box */
+    --chart-4: 195 50% 45%;
+    --chart-5: 38 85% 65%;
+
+    /* Sidebar Colors - Dark mode */
+    --sidebar-background: 220 14% 12%;
+    --sidebar-foreground: 42 18% 94%;
+    --sidebar-primary: 30 65% 68%;
+    --sidebar-primary-foreground: 220 14% 18%;
+    --sidebar-accent: 220 14% 18%;
+    --sidebar-accent-foreground: 42 18% 94%;
+    --sidebar-border: 220 14% 20%;
+    --sidebar-ring: 30 65% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    letter-spacing: 0.01em;
+  }
+}
+
+@layer components {
+  .markdown-content {
+    @apply text-foreground;
+    max-width: 100%;
+    overflow-x: hidden;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown-content h1 {
+    @apply text-3xl font-bold mb-4 mt-6 pb-2 border-b border-border font-serif text-foreground;
+  }
+
+  .markdown-content h2 {
+    @apply text-2xl font-semibold mb-3 mt-5 font-serif text-foreground;
+  }
+
+  .markdown-content h3 {
+    @apply text-xl font-semibold mb-2 mt-4 font-serif text-foreground;
+  }
+
+  .markdown-content h4 {
+    @apply text-lg font-semibold mb-2 mt-3 font-serif text-foreground;
+  }
+
+  .markdown-content p {
+    @apply mb-4 leading-relaxed text-foreground;
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply mb-4 ml-6;
+  }
+
+  .markdown-content ul {
+    @apply list-disc;
+  }
+
+  .markdown-content ol {
+    @apply list-decimal;
+  }
+
+  .markdown-content li {
+    @apply mb-2 text-foreground;
+  }
+
+  .markdown-content code {
+    @apply bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono border border-border;
+  }
+
+  .markdown-content pre {
+    @apply bg-secondary text-secondary-foreground p-4 rounded-lg overflow-x-auto mb-4;
+    max-width: 100%;
+    white-space: pre;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent text-secondary-foreground p-0 border-0;
+  }
+
+  .markdown-content blockquote {
+    @apply border-l-4 border-border pl-4 italic my-4 text-muted-foreground;
+  }
+
+  .markdown-content a {
+    @apply text-primary underline hover:opacity-80;
+  }
+
+  .markdown-content hr {
+    @apply my-6 border-t border-border;
+  }
+
+  .markdown-content table {
+    @apply w-full border-collapse mb-4;
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    @apply border border-border px-4 py-2;
+  }
+
+  .markdown-content th {
+    @apply bg-muted font-semibold text-foreground;
+  }
+
+  .markdown-content td {
+    @apply text-foreground;
+  }
+
+  .markdown-content strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .markdown-content em {
+    @apply italic;
+  }
+
+  .markdown-content img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Sonner toast styles for better contrast */
+  :root {
+    --sonner-toast-bg: hsl(var(--popover));
+    --sonner-toast-text: hsl(var(--popover-foreground));
+    --sonner-toast-border: hsl(var(--border));
+  }
+
+  .dark {
+    --sonner-toast-bg: hsl(var(--popover));
+    --sonner-toast-text: hsl(var(--popover-foreground));
+    --sonner-toast-border: hsl(var(--border));
+  }
+
+  [data-sonner-toast] {
+    background: var(--sonner-toast-bg) !important;
+    color: var(--sonner-toast-text) !important;
+    border-color: var(--sonner-toast-border) !important;
+  }
+
+  [data-sonner-toast] [data-title] {
+    color: var(--sonner-toast-text) !important;
+  }
+
+  [data-sonner-toast] [data-description] {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Thin scrollbar */
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Firefox */
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  /* Text box color utility */
+  .text-box {
+    color: hsl(var(--box));
+  }
+
+  /* Toast animations */
+  @keyframes slide-in-from-top-full {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-bottom-full {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-out-to-right-full {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .animate-in {
+    animation: slide-in-from-top-full 0.2s ease-out;
+  }
+
+  .animate-out {
+    animation:
+      fade-out 0.2s ease-in,
+      slide-out-to-right-full 0.2s ease-in;
+  }
+
+  /* Custom Animations for Connection Error Page */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; /* Start invisible */
+  }
+
+  /* Sheet Animations - Smooth and responsive */
+  /* Overlay: fade in/out only, no movement */
+  .sheet-overlay {
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sheet-overlay[data-state='open'] {
+    opacity: 1;
+  }
+
+  .sheet-overlay[data-state='closed'] {
+    opacity: 0;
+  }
+
+  /* Sheet Content: animations based on side */
+  .sheet-content {
+    opacity: 0;
+    transition:
+      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Right side (default) */
+  .sheet-content[data-side='right'] {
+    transform: translateX(100%);
+  }
+
+  .sheet-content[data-side='right'][data-state='open'] {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .sheet-content[data-side='right'][data-state='closed'] {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  /* Left side */
+  .sheet-content[data-side='left'] {
+    transform: translateX(-100%);
+  }
+
+  .sheet-content[data-side='left'][data-state='open'] {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .sheet-content[data-side='left'][data-state='closed'] {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  /* Top side */
+  .sheet-content[data-side='top'] {
+    transform: translateY(-100%);
+  }
+
+  .sheet-content[data-side='top'][data-state='open'] {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .sheet-content[data-side='top'][data-state='closed'] {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  /* Bottom side */
+  .sheet-content[data-side='bottom'] {
+    transform: translateY(100%);
+  }
+
+  .sheet-content[data-side='bottom'][data-state='open'] {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .sheet-content[data-side='bottom'][data-state='closed'] {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  /* Fallback for when data-side is not set (defaults to right) */
+  .sheet-content:not([data-side]) {
+    transform: translateX(100%);
+  }
+
+  .sheet-content:not([data-side])[data-state='open'] {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .sheet-content:not([data-side])[data-state='closed'] {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  /* Ensure no conflicting animations from Radix UI */
+  .sheet-overlay *,
+  .sheet-content * {
+    animation: none !important;
+  }
+
+  .fade-out-80 {
+    animation: fade-out 0.2s ease-in;
+  }
+
+  .slide-out-to-right-full {
+    animation: slide-out-to-right-full 0.2s ease-in;
+  }
+
+  .slide-in-from-top-full {
+    animation: slide-in-from-top-full 0.2s ease-out;
+  }
+
+  .slide-in-from-bottom-full {
+    animation: slide-in-from-bottom-full 0.2s ease-out;
+  }
+
+  @media (min-width: 640px) {
+    .sm\:slide-in-from-bottom-full {
+      animation: slide-in-from-bottom-full 0.2s ease-out;
+    }
+  }
+
+  /* Repo List Item Styles */
+  .repo-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: calc(var(--radius) - 2px);
+    border: 2px solid transparent;
+    background-color: hsl(var(--card));
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .repo-list-item:hover {
+    border-color: hsl(var(--primary));
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .repo-list-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .repo-list-item-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .repo-list-item-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: hsl(var(--card-foreground));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .repo-list-item-description {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .repo-list-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .repo-list-item-arrow {
+    flex-shrink: 0;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s ease;
+  }
+
+  .repo-list-item:hover .repo-list-item-arrow {
+    color: hsl(var(--primary));
+  }
+
+  /* Project List Item Styles */
+  .project-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: calc(var(--radius) - 2px);
+    border: 2px solid transparent;
+    background-color: hsl(var(--card));
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .project-list-item:hover {
+    border-color: hsl(var(--primary));
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .project-list-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-list-item-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-list-item-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: hsl(var(--card-foreground));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .project-list-item-description {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .project-list-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .project-list-item-arrow {
+    flex-shrink: 0;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s ease;
+  }
+
+  .project-list-item:hover .project-list-item-arrow {
+    color: hsl(var(--primary));
+  }
+
+  /* Loading and Error States */
+  .loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+  }
+
+  .loading-text {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+  }
+
+  .error-text {
+    color: hsl(var(--destructive));
+    margin-bottom: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 0;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .empty-state-code {
+    background-color: hsl(var(--muted));
+    padding: 0.25rem 0.5rem;
+    border-radius: calc(var(--radius) - 4px);
+    color: hsl(var(--foreground));
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    margin-top: 0.5rem;
+  }
+
+  /* Sheet Content Styles */
+  .sheet-stat-card {
+    padding: 0.75rem;
+    border-radius: calc(var(--radius) - 2px);
+    background-color: hsl(var(--muted));
+  }
+
+  .sheet-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .sheet-stat-label {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .sheet-context-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-radius: calc(var(--radius) - 4px);
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .sheet-context-label {
+    font-size: 0.875rem;
+  }
+
+  /* Sidebar Toggle Button */
+  .sidebar-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+
+  /* Sidebar Animation Fix - Ensure sidebar slides from left, not from top */
+  /* Allow opacity animation but prevent transform/position animations */
+  [data-sidebar='sidebar'] {
+    transform: none !important;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    animation: sidebar-fade-in 0.3s ease-in-out forwards;
+    pointer-events: auto !important;
+  }
+
+  @keyframes sidebar-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Override any top/transform animations for sidebar children, but allow opacity and interactions */
+  [data-sidebar='sidebar'] * {
+    animation-name: none !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Ensure sidebar container doesn't have vertical animations */
+  .group[data-state='expanded'],
+  .group[data-state='collapsed'],
+  .group[data-state='expanded'] > div,
+  .group[data-state='collapsed'] > div {
+    transform: translateX(0) !important;
+  }
+
+  /* Fix for sidebar wrapper - ensure it only transitions width/left */
+  .group.peer[data-state] {
+    /* Allow transitions for width/left but prevent other animations */
+  }
+
+  /* Ensure sidebar content doesn't animate vertically, but allow opacity and interactions */
+  [data-sidebar='sidebar'] > * {
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Sidebar Header Styles */
+  .sidebar-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .sidebar-logo {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease;
+  }
+
+  .sidebar-logo:hover {
+    transform: scale(1.05);
+  }
+
+  .sidebar-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: hsl(var(--sidebar-foreground));
+    font-family: var(--font-logo);
+  }
+
+  /* Sidebar Border Styles */
+  .sidebar-header-border {
+    border-bottom: 1px solid hsl(var(--sidebar-border));
+  }
+
+  .sidebar-footer-border {
+    border-top: 1px solid hsl(var(--sidebar-border));
+  }
+
+  /* App Layout Styles */
+  .app-container {
+    height: 100vh;
+    min-width: 0;
+    overflow-x: hidden;
+    background-color: hsl(var(--background));
+  }
+
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .loading-spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .loading-spinner-wrapper {
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid hsl(var(--primary));
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-text {
+    color: hsl(var(--muted-foreground));
+  }
+}

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Get the current branch
+current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+# Only run checks when pushing to main
+if [ "$current_branch" = "main" ]; then
+  echo "🔍 Pre-push checks for main branch..."
+
+  # Run build
+  echo "📦 Running build..."
+  if ! npm run build; then
+    echo "❌ Build failed! Push aborted."
+    exit 1
+  fi
+
+  # Check licenses headers
+  echo "📄 Checking license headers..."
+  if ! npm run licenses:check; then
+    echo "❌ License header check failed! Push aborted."
+    echo "💡 Run 'npm run licenses:add' to add missing headers"
+    exit 1
+  fi
+
+  # Check shadcn licenses
+  echo "📄 Checking shadcn license headers..."
+  if ! npm run licenses:check:shadcn; then
+    echo "❌ Shadcn license header check failed! Push aborted."
+    echo "💡 Run 'npm run licenses:add:shadcn' to add missing headers"
+    exit 1
+  fi
+
+  # Check third-party licenses are up to date
+  echo "📄 Checking third-party licenses are up to date..."
+  npm run licenses:thirdparty
+  CHANGED_FILES=$(git status --porcelain THIRD-PARTY-LICENSES.md packages/mcp/THIRD-PARTY-LICENSES.md 2>/dev/null || echo "")
+  if [ -n "$CHANGED_FILES" ]; then
+    echo "❌ Third-party license files have been modified and need to be committed:"
+    echo ""
+    git status --short THIRD-PARTY-LICENSES.md packages/mcp/THIRD-PARTY-LICENSES.md
+    echo ""
+    echo "💡 Run 'npm run licenses:thirdparty' and commit the updated files."
+    exit 1
+  fi
+
+  echo "✅ All pre-push checks passed!"
+fi

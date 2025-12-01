@@ -1,0 +1,18 @@
+{
+  "name": "@bigrack/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BigRack.dev Backend API",
+  "scripts": {
+    "dev": "echo 'API dev server (TBD - ticket #84)'",
+    "build": "echo 'API build (TBD - ticket #84)'",
+    "test": "echo 'API tests (TBD)'",
+    "clean": "echo 'API clean (TBD)'"
+  },
+  "dependencies": {
+    "@bigrack/shared": "*"
+  },
+  "devDependencies": {
+    "@bigrack/config": "*"
+  }
+}

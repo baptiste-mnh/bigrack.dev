@@ -1,0 +1,238 @@
+name: Main pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+  DO_NOT_TRACK: 1
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+  check-file-licenses:
+    name: Check License Headers in Files
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Check license headers
+        run: npm run licenses:check
+
+      - name: Check shadcn license headers
+        run: npm run licenses:check:shadcn
+
+  check-third-party-licenses:
+    name: Check Third-Party Licenses
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Generate third-party licenses
+        run: npm run licenses:thirdparty
+
+      - name: Check if third-party license files were modified
+        id: check-changes
+        run: |
+          # Check for changes in third-party license files
+          CHANGED_FILES=$(git status --porcelain THIRD-PARTY-LICENSES.md packages/mcp/THIRD-PARTY-LICENSES.md 2>/dev/null || echo "")
+
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "❌ Third-party license files have been modified and need to be committed:"
+            echo ""
+            git status --short THIRD-PARTY-LICENSES.md packages/mcp/THIRD-PARTY-LICENSES.md
+            echo ""
+            echo "Please run 'npm run licenses:thirdparty' and commit the updated files."
+            echo ""
+            echo "Diff:"
+            git diff THIRD-PARTY-LICENSES.md packages/mcp/THIRD-PARTY-LICENSES.md || true
+            exit 1
+          else
+            echo "✓ Third-party license files are up to date"
+          fi
+
+  test-mcp:
+    name: Test MCP Package
+    runs-on: ubuntu-latest
+    needs: [check-file-licenses, check-third-party-licenses]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3 \
+            make \
+            g++ \
+            sqlite3 \
+            libsqlite3-dev \
+            libgomp1 \
+            libatlas-base-dev \
+            liblapack-dev
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Ensure sqlite-vss is installed
+        run: |
+          # Reinstall sqlite-vss to ensure native binaries are properly installed
+          npm install sqlite-vss@^0.1.2 --force
+          # Verify installation
+          echo "Checking sqlite-vss files:"
+          ls -la node_modules/sqlite-vss-linux-x64/lib/ 2>/dev/null || echo "sqlite-vss-linux-x64 not found in root"
+          echo "Checking dependencies of vss0.so:"
+          ldd node_modules/sqlite-vss-linux-x64/lib/vss0.so 2>/dev/null || echo "ldd failed"
+
+      - name: Build project
+        run: npm run build
+
+      - name: Run MCP tests
+        run: npm run test:mcp
+        env:
+          CI: true

@@ -1,0 +1,390 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  username  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  repos       Repo[]
+  repoMembers RepoMember[]
+  projects    Project[]
+
+  @@map("users")
+}
+
+model Repo {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  visibility  String  @default("private")
+
+  gitRepository    String?
+  gitDefaultBranch String? @default("main")
+
+  ownerId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lastSyncAt  DateTime?
+  syncVersion Int       @default(1)
+  vectorClock String?
+
+  owner           User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members         RepoMember[]
+  projects        Project[]
+  businessRules   BusinessRule[]
+  glossaryEntries GlossaryEntry[]
+  patterns        ArchitecturePattern[]
+  conventions     TeamConvention[]
+  documents       Document[]
+
+  @@index([ownerId])
+  @@map("repos")
+}
+
+model RepoMember {
+  id     String @id @default(uuid())
+  repoId String
+  userId String
+  role   String @default("viewer")
+
+  joinedAt  DateTime @default(now())
+  invitedBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([repoId, userId])
+  @@index([userId])
+  @@index([repoId])
+  @@map("repo_members")
+}
+
+model BusinessRule {
+  id     String @id @default(uuid())
+  repoId String
+
+  name            String
+  description     String
+  validationLogic String?
+  examples        String?
+  relatedDomains  String?
+
+  category String?
+  priority String  @default("medium")
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
+  version        Int     @default(1)
+  lastModifiedBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@index([repoId])
+  @@index([category])
+  @@map("business_rules")
+}
+
+model GlossaryEntry {
+  id     String @id @default(uuid())
+  repoId String
+
+  term         String
+  definition   String
+  synonyms     String?
+  relatedTerms String?
+  examples     String?
+
+  category String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@index([repoId])
+  @@map("glossary_entries")
+}
+
+model ArchitecturePattern {
+  id     String @id @default(uuid())
+  repoId String
+
+  name        String
+  description String
+  whenToUse   String?
+  example     String?
+  benefits    String?
+  tradeoffs   String?
+
+  category String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@index([repoId])
+  @@map("architecture_patterns")
+}
+
+model TeamConvention {
+  id     String @id @default(uuid())
+  repoId String
+
+  category String
+  rule     String
+
+  enforced Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@index([repoId])
+  @@map("team_conventions")
+}
+
+model Document {
+  id     String @id @default(uuid())
+  repoId String
+
+  title   String
+  content String
+  tags    String?
+
+  type     String  @default("general")
+  mimeType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@index([repoId])
+  @@index([type])
+  @@map("documents")
+}
+
+model Project {
+  id          String  @id @default(uuid())
+  repoId      String
+  name        String
+  description String?
+  type        String  @default("feature")
+
+  gitBranch            String?
+  gitBaseBranch        String?
+  gitLastCommitSha     String?
+  gitLastCommitMessage String?
+  gitLastCommitAt      DateTime?
+
+  status   String @default("planned")
+  progress Int    @default(0)
+
+  createdBy  String
+  assignedTo String?
+
+  visibility String @default("private")
+
+  inheritsFromRepo Boolean @default(true)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  lastSyncAt  DateTime?
+  syncVersion Int       @default(1)
+  vectorClock String?
+
+  repo        Repo             @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  contexts    ProjectContext[]
+  tasks       Task[]
+  checkpoints Checkpoint[]
+
+  @@index([repoId])
+  @@index([createdBy])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectContext {
+  id        String @id @default(uuid())
+  projectId String
+
+  content     String
+  contentType String @default("general")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_contexts")
+}
+
+model Task {
+  id        String @id @default(uuid())
+  projectId String
+
+  title       String
+  description String?
+
+  status   String  @default("pending")
+  priority String  @default("medium")
+  order    Int     @default(0)
+  type     String?
+
+  estimatedTime String?
+
+  dependsOn String?
+  blockedBy String?
+
+  assignedTo String?
+  assignee   String?
+
+  gitBranch String?
+
+  tags               String?
+  validationCriteria String?
+
+  externalId     String?
+  objectives     String?
+  relatedTickets String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  commentaries Commentary[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([type])
+  @@map("tasks")
+}
+
+model Commentary {
+  id     String @id @default(uuid())
+  taskId String
+
+  content String
+
+  createdBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("commentaries")
+}
+
+model Checkpoint {
+  id        String @id @default(uuid())
+  projectId String
+
+  state   String
+  message String?
+
+  gitCommitSha String?
+
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("checkpoints")
+}
+
+model SyncLog {
+  id         String @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+
+  timestamp     DateTime  @default(now())
+  userId        String?
+  syncedToCloud Boolean   @default(false)
+  syncedAt      DateTime?
+  cloudBlobId   String?
+
+  vectorClock String?
+
+  syncAttempts  Int     @default(0)
+  lastSyncError String?
+
+  @@index([entityType, entityId])
+  @@index([syncedToCloud])
+  @@index([timestamp])
+  @@map("sync_log")
+}
+
+model VectorEmbedding {
+  id String @id @default(uuid())
+
+  entityType String
+  entityId   String
+
+  repoId    String
+  projectId String?
+
+  embedding      String
+  embeddingModel String @default("all-MiniLM-L6-v2")
+  dimension      Int    @default(384)
+
+  contentHash String
+
+  category String?
+  priority String?
+
+  chunkIndex       Int @default(0)
+  totalChunks      Int @default(1)
+  chunkStartOffset Int @default(0)
+  chunkEndOffset   Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rowidMap VectorEmbeddingsRowidMap?
+
+  @@unique([entityType, entityId, chunkIndex])
+  @@index([repoId])
+  @@index([projectId])
+  @@index([entityType])
+  @@index([entityType, entityId])
+  @@index([contentHash])
+  @@map("vector_embeddings")
+}
+
+model VectorEmbeddingsRowidMap {
+  rowid       Int    @id @default(autoincrement())
+  embeddingId String @unique @map("embedding_id")
+
+  embedding VectorEmbedding @relation(fields: [embeddingId], references: [id], onDelete: Cascade)
+
+  @@map("vector_embeddings_rowid_map")
+}

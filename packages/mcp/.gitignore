@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Compiled files in src (should not be committed)
+src/**/*.js
+src/**/*.d.ts
+src/**/*.js.map
+src/**/*.d.ts.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+
+# Environment variables
+.env
+.env.local
+.env.test
+
+# Test database
+bigrack-test.db
+
+# Embedding models (large files)
+models/
+
+# Turbo cache
+.turbo/
+
+/src/generated/prisma

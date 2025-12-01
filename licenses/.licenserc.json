@@ -1,0 +1,83 @@
+{
+  "license": "licenses/license-headers/apache-2.0.txt",
+  "licenseFormats": {
+    "ts|tsx|js|jsx": {
+      "prepend": "/*",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    },
+    "sql": {
+      "eachLine": {
+        "prepend": "-- "
+      }
+    }
+  },
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    "**/*.log",
+    "**/*.md",
+    "**/*.json",
+    "**/*.lock",
+    "**/*.yaml",
+    "**/*.yml",
+    ".git/**",
+    "**/.DS_Store",
+    ".next/**",
+    ".husky/**",
+    "scripts/**",
+    "apps/dashboard/src/hooks/use-mobile.tsx",
+    "packages/shared/src/components/ui/**",
+    "apps/dashboard/src/components/ui/**",
+    "**/generated/**",
+    "**/*.d.ts",
+    "**/*.d.ts.map",
+    "**/*.tsbuildinfo",
+    "**/prisma/client.*",
+    "**/prisma/edge.*",
+    "**/prisma/default.*",
+    "**/prisma/runtime/**",
+    "**/prisma/query_engine*",
+    "**/prisma/libquery_engine*",
+    "**/prisma/*.wasm",
+    "**/prisma/*.mjs",
+    "**/.dockerignore",
+    "**/Dockerfile",
+    "**/postcss.config.*",
+    "**/tailwind.config.*",
+    "**/vite.config.*",
+    "**/next.config.*",
+    "**/eslint.config.*",
+    "**/.prettierrc*",
+    "**/.gitignore",
+    "**/.eslintignore",
+    "**/index.html",
+    "**/NOTICE",
+    "**/THIRD-PARTY-LICENSES.md",
+    "**/README.md",
+    "**/THEME.md",
+    "**/*.html",
+    "**/*.css",
+    "**/*.woff2",
+    "**/*.webp",
+    "**/*.pack*",
+    "**/*.gz",
+    "**/schema.prisma",
+    "**/.license-template.txt",
+    "**/.prettierignore",
+    "**/license-headers/**",
+    "**/licenses/**",
+    "**/BUILD_ID",
+    "**/trace",
+    "**/.env",
+    "**/.env.test",
+    "**/vitest.config.ts",
+    "**/migration_lock.toml"
+  ]
+}

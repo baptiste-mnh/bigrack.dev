@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BigRack GUI</title>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    /* Markdown styles */
+    .markdown-content {
+      line-height: 1.6;
+    }
+
+    .markdown-content h1 {
+      font-size: 2em;
+      font-weight: bold;
+      margin: 0.67em 0;
+    }
+
+    .markdown-content h2 {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 0.75em 0;
+    }
+
+    .markdown-content h3 {
+      font-size: 1.17em;
+      font-weight: bold;
+      margin: 0.83em 0;
+    }
+
+    .markdown-content h4 {
+      font-size: 1em;
+      font-weight: bold;
+      margin: 1em 0;
+    }
+
+    .markdown-content p {
+      margin: 1em 0;
+    }
+
+    .markdown-content ul,
+    .markdown-content ol {
+      margin: 1em 0;
+      padding-left: 2em;
+    }
+
+    .markdown-content li {
+      margin: 0.5em 0;
+    }
+
+    .markdown-content code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    .markdown-content pre {
+      background: #f4f4f4;
+      padding: 1em;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    .markdown-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .markdown-content blockquote {
+      border-left: 4px solid #ddd;
+      padding-left: 1em;
+      color: #666;
+      margin: 1em 0;
+    }
+
+    .markdown-content a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
+
+    .markdown-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+
+    .markdown-content th,
+    .markdown-content td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .markdown-content th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50" x-data="app()" x-init="init()">
+
+
+  <!-- Document Viewer Modal -->
+  <div x-show="viewingDocument" @click.self="viewingDocument = null"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-cloak>
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b">
+        <h2 class="text-2xl font-bold" x-text="viewingDocument?.title"></h2>
+        <button @click="viewingDocument = null" class="text-gray-400 hover:text-gray-600 text-2xl">
+          ×
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto flex-1">
+        <div class="markdown-content" x-html="renderMarkdown(viewingDocument?.content)"></div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t bg-gray-50">
+        <div class="flex items-center justify-between text-sm text-gray-600">
+          <span x-show="viewingDocument?.projectName" class="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+            <span x-text="viewingDocument?.projectName"></span>
+          </span>
+          <span>Category: <span x-text="viewingDocument?.category || 'general'"></span></span>
+          <button @click="viewingDocument = null" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900">BigRack GUI</h1>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-500" x-show="selectedRepo && !viewingRepoContextPage"
+            x-text="selectedRepo?.name"></span>
+          <button x-show="viewingRepoContextPage" @click="updateRoute('/')"
+            class="text-sm text-blue-600 hover:text-blue-800">
+            ← Back to Repos
+          </button>
+          <button x-show="selectedRepo && !viewingRepoContextPage"
+            @click="updateRoute('/')"
+            class="text-sm text-blue-600 hover:text-blue-800">
+            ← Back to Repos
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8" :class="{'max-w-full': viewingRepoContextPage}">
+
+    <!-- Loading State -->
+    <div x-show="loading" class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Context Viewer Page (Sidebar + Content) -->
+    <div x-show="!loading && viewingRepoContextPage" x-cloak class="flex h-[calc(100vh-140px)] gap-6">
+
+      <!-- Left Sidebar - Context List -->
+      <div class="w-80 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+        <div class="p-4 border-b bg-gray-50">
+          <h3 class="font-bold text-lg">
+            <span x-text="viewingRepoContext?.name"></span> Context
+          </h3>
+          <p class="text-sm text-gray-500 mt-1">
+            <span x-text="filteredContextItems.length"></span> items
+          </p>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4 border-b">
+          <input type="text" x-model="contextSearchQuery" placeholder="Search context..."
+            class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="overflow-y-auto flex-1">
+          <template x-for="context in filteredContextItems" :key="context.id">
+            <div @click="selectedContextItem = context"
+              :class="{'bg-blue-50 border-l-4 border-l-blue-500': selectedContextItem?.id === context.id}"
+              class="p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors">
+              <div class="flex items-start justify-between mb-1">
+                <h4 class="font-semibold text-sm flex-1 pr-2" x-text="context.title || context.name || context.term">
+                </h4>
+                <span class="text-xs px-2 py-0.5 rounded flex-shrink-0" :class="{
+                    'bg-purple-100 text-purple-700': context.entityType === 'business_rule',
+                    'bg-blue-100 text-blue-700': context.entityType === 'glossary_entry',
+                    'bg-green-100 text-green-700': context.entityType === 'pattern',
+                    'bg-yellow-100 text-yellow-700': context.entityType === 'convention',
+                    'bg-gray-100 text-gray-700': context.entityType === 'document'
+                  }" x-text="context.entityType.replace('_', ' ')">
+                </span>
+              </div>
+              <p class="text-xs text-gray-600 line-clamp-2 mt-1"
+                x-text="context.description || context.definition || context.content?.substring(0, 80) + '...'"></p>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Right Content Area -->
+      <div class="flex-1 bg-white rounded-lg shadow overflow-hidden flex flex-col">
+        <!-- No selection state -->
+        <div x-show="!selectedContextItem" class="flex items-center justify-center h-full text-gray-400">
+          <div class="text-center">
+            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg>
+            <p class="text-lg">Select an item to view details</p>
+          </div>
+        </div>
+
+        <!-- Content display -->
+        <div x-show="selectedContextItem" class="flex flex-col h-full">
+          <!-- Header -->
+          <div class="p-6 border-b">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h2 class="text-2xl font-bold mb-2"
+                  x-text="selectedContextItem?.title || selectedContextItem?.name || selectedContextItem?.term"></h2>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm px-3 py-1 rounded" :class="{
+                      'bg-purple-100 text-purple-700': selectedContextItem?.entityType === 'business_rule',
+                      'bg-blue-100 text-blue-700': selectedContextItem?.entityType === 'glossary_entry',
+                      'bg-green-100 text-green-700': selectedContextItem?.entityType === 'pattern',
+                      'bg-yellow-100 text-yellow-700': selectedContextItem?.entityType === 'convention',
+                      'bg-gray-100 text-gray-700': selectedContextItem?.entityType === 'document'
+                    }" x-text="selectedContextItem?.entityType?.replace('_', ' ')">
+                  </span>
+                  <span x-show="selectedContextItem?.category" class="text-sm text-gray-500">
+                    Category: <span x-text="selectedContextItem?.category"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Body -->
+          <div class="p-6 overflow-y-auto flex-1">
+            <!-- For documents - render markdown -->
+            <div x-show="selectedContextItem?.entityType === 'document'" class="markdown-content"
+              x-html="renderMarkdown(selectedContextItem?.content)"></div>
+
+            <!-- For business rules -->
+            <div x-show="selectedContextItem?.entityType === 'business_rule'">
+              <div class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Description</h3>
+                <div class="text-gray-700 markdown-content" x-html="renderMarkdown(selectedContextItem?.description)">
+                </div>
+              </div>
+              <div x-show="selectedContextItem?.validationLogic" class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Validation Logic</h3>
+                <div class="markdown-content" x-html="renderMarkdown(selectedContextItem?.validationLogic)"></div>
+              </div>
+              <div x-show="selectedContextItem?.examples" class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Examples</h3>
+                <div class="text-gray-700 markdown-content" x-html="renderMarkdown(selectedContextItem?.examples)">
+                </div>
+              </div>
+            </div>
+
+            <!-- For glossary entries -->
+            <div x-show="selectedContextItem?.entityType === 'glossary_entry'">
+              <div class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Definition</h3>
+                <div class="text-gray-700 markdown-content" x-html="renderMarkdown(selectedContextItem?.definition)">
+                </div>
+              </div>
+              <div x-show="selectedContextItem?.relatedTerms" class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Related Terms</h3>
+                <div class="text-gray-700 markdown-content" x-html="renderMarkdown(selectedContextItem?.relatedTerms)">
+                </div>
+              </div>
+            </div>
+
+            <!-- For patterns and conventions -->
+            <div
+              x-show="selectedContextItem?.entityType === 'pattern' || selectedContextItem?.entityType === 'convention'">
+              <div class="mb-4">
+                <h3 class="font-semibold text-lg mb-2">Description</h3>
+                <div class="text-gray-700 markdown-content"
+                  x-html="renderMarkdown(selectedContextItem?.description || selectedContextItem?.rule)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repos List -->
+    <div x-show="!loading && !selectedRepo && !viewingRepoContextPage" x-cloak>
+      <h2 class="text-2xl font-bold mb-4">Repositories</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <template x-for="repo in repos" :key="repo.id">
+          <div @click="selectRepo(repo)"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-500 flex flex-col">
+            <h3 class="text-xl font-semibold mb-2" x-text="repo.name"></h3>
+            <p class="text-gray-600 text-sm mb-4" x-text="repo.description"></p>
+
+            <div class="flex items-center text-sm text-gray-500 mb-3">
+              <span><span x-text="repo._count?.projects || 0"></span> projects</span>
+            </div>
+
+            <div class="flex gap-1 text-xs mb-4" x-show="repo._count">
+              <span x-show="repo._count.businessRules > 0" class="px-2 py-1 bg-purple-100 text-purple-700 rounded">
+                <span x-text="repo._count.businessRules"></span> rules
+              </span>
+              <span x-show="repo._count.glossary > 0" class="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                <span x-text="repo._count.glossary"></span> terms
+              </span>
+              <span x-show="repo._count.documents > 0" class="px-2 py-1 bg-green-100 text-green-700 rounded">
+                <span x-text="repo._count.documents"></span> docs
+              </span>
+            </div>
+
+            <div class="mt-auto flex justify-end">
+              <button @click.stop="showRepoContext(repo)"
+                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-xs font-medium transition-colors flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                  </path>
+                </svg>
+                View Context
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+      <div x-show="repos.length === 0" class="text-center py-12 text-gray-500">
+        No repositories found. Run <code class="bg-gray-100 px-2 py-1 rounded">bigrack init</code> to create one.
+      </div>
+    </div>
+
+    <!-- Projects List -->
+    <div x-show="!loading && selectedRepo && !selectedProject && !viewingRepoContextPage" x-cloak>
+      <h2 class="text-2xl font-bold mb-4">Projects in <span x-text="selectedRepo?.name"></span></h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <template x-for="project in projects" :key="project.id">
+          <div @click="selectProject(project)"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-500 flex flex-col">
+            <h3 class="text-xl font-semibold mb-2" x-text="project.name"></h3>
+            <p class="text-gray-600 text-sm mb-4" x-text="project.description"></p>
+
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-2 py-1 rounded text-xs font-medium" :class="{
+                  'bg-blue-100 text-blue-800': project.type === 'feature',
+                  'bg-red-100 text-red-800': project.type === 'bugfix',
+                  'bg-purple-100 text-purple-800': project.type === 'refactor'
+                }" x-text="project.type">
+              </span>
+              <span class="text-gray-500 text-sm">
+                <span x-text="project._count?.tasks || 0"></span> tickets
+              </span>
+            </div>
+
+            <div class="flex gap-1 text-xs mb-4" x-show="project._count">
+              <span x-show="project._count.businessRules > 0" class="px-2 py-1 bg-purple-100 text-purple-700 rounded">
+                <span x-text="project._count.businessRules"></span> rules
+              </span>
+              <span x-show="project._count.glossary > 0" class="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                <span x-text="project._count.glossary"></span> terms
+              </span>
+              <span x-show="project._count.documents > 0" class="px-2 py-1 bg-green-100 text-green-700 rounded">
+                <span x-text="project._count.documents"></span> docs
+              </span>
+            </div>
+
+            <div class="mt-auto flex justify-end">
+              <button @click.stop="showRepoContext(selectedRepo)"
+                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-xs font-medium transition-colors flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                  </path>
+                </svg>
+                Context
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+      <div x-show="projects.length === 0" class="text-center py-12 text-gray-500">
+        No projects found in this repository.
+      </div>
+    </div>
+
+    <!-- Tickets Kanban -->
+    <div x-show="!loading && selectedProject" x-cloak>
+      <div class="mb-6">
+        <button @click="updateRoute(`/repos/${selectedRepo.id}`)" class="text-sm text-blue-600 hover:text-blue-800 mb-2">
+          ← Back to Projects
+        </button>
+        <h2 class="text-2xl font-bold">
+          Tickets: <span x-text="selectedProject?.name"></span>
+        </h2>
+      </div>
+
+      <!-- Ticket Search and Controls -->
+      <div class="mb-6 flex gap-4 items-center">
+        <input type="text" x-model="ticketSearch" placeholder="Search tickets by title..."
+          class="flex-1 p-3 border rounded-lg">
+
+        <!-- Sort Dropdown -->
+        <select x-model="ticketSortBy"
+          class="px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="priority">Sort by Priority</option>
+          <option value="createdAt">Sort by Date</option>
+        </select>
+
+        <!-- View Toggle -->
+        <div class="flex bg-gray-100 rounded-lg p-1">
+          <button @click="ticketView = 'kanban'" :class="ticketView === 'kanban' ? 'bg-white shadow' : 'text-gray-600'"
+            class="px-4 py-2 rounded text-sm font-medium transition-all">
+            Kanban
+          </button>
+          <button @click="ticketView = 'list'" :class="ticketView === 'list' ? 'bg-white shadow' : 'text-gray-600'"
+            class="px-4 py-2 rounded text-sm font-medium transition-all">
+            List
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div x-show="ticketView === 'kanban'" class="grid md:grid-cols-3 gap-6">
+
+        <!-- Pending Column -->
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <h3 class="font-semibold text-lg mb-4 flex items-center">
+            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+            Pending (<span x-text="filteredTicketsByStatus.pending.length"></span>)
+          </h3>
+          <div class="space-y-3">
+            <template x-for="ticket in filteredTicketsByStatus.pending" :key="ticket.id">
+              <div class="bg-white p-4 rounded-lg shadow">
+                <h4 class="font-semibold mb-2" x-text="ticket.title"></h4>
+                <p class="text-sm text-gray-600 mb-3" x-text="ticket.description"></p>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="px-2 py-1 rounded" :class="{
+                      'bg-red-100 text-red-800': ticket.priority === 'critical',
+                      'bg-orange-100 text-orange-800': ticket.priority === 'high',
+                      'bg-yellow-100 text-yellow-800': ticket.priority === 'medium',
+                      'bg-green-100 text-green-800': ticket.priority === 'low'
+                    }" x-text="ticket.priority">
+                  </span>
+                  <span class="text-gray-500" x-text="ticket.estimatedTime"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <h3 class="font-semibold text-lg mb-4 flex items-center">
+            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+            In Progress (<span x-text="filteredTicketsByStatus['in-progress'].length"></span>)
+          </h3>
+          <div class="space-y-3">
+            <template x-for="ticket in filteredTicketsByStatus['in-progress']" :key="ticket.id">
+              <div class="bg-white p-4 rounded-lg shadow">
+                <h4 class="font-semibold mb-2" x-text="ticket.title"></h4>
+                <p class="text-sm text-gray-600 mb-3" x-text="ticket.description"></p>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="px-2 py-1 rounded" :class="{
+                      'bg-red-100 text-red-800': ticket.priority === 'critical',
+                      'bg-orange-100 text-orange-800': ticket.priority === 'high',
+                      'bg-yellow-100 text-yellow-800': ticket.priority === 'medium',
+                      'bg-green-100 text-green-800': ticket.priority === 'low'
+                    }" x-text="ticket.priority">
+                  </span>
+                  <span class="text-gray-500" x-text="ticket.estimatedTime"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Completed Column -->
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <h3 class="font-semibold text-lg mb-4 flex items-center">
+            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            Completed (<span x-text="filteredTicketsByStatus.completed.length"></span>)
+          </h3>
+          <div class="space-y-3">
+            <template x-for="ticket in filteredTicketsByStatus.completed" :key="ticket.id">
+              <div class="bg-white p-4 rounded-lg shadow opacity-75">
+                <h4 class="font-semibold mb-2" x-text="ticket.title"></h4>
+                <p class="text-sm text-gray-600 mb-3" x-text="ticket.description"></p>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="px-2 py-1 rounded" :class="{
+                      'bg-red-100 text-red-800': ticket.priority === 'critical',
+                      'bg-orange-100 text-orange-800': ticket.priority === 'high',
+                      'bg-yellow-100 text-yellow-800': ticket.priority === 'medium',
+                      'bg-green-100 text-green-800': ticket.priority === 'low'
+                    }" x-text="ticket.priority">
+                  </span>
+                  <span class="text-gray-500" x-text="ticket.estimatedTime"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div x-show="ticketView === 'list'">
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <template x-for="ticket in sortedAndFilteredTickets" :key="ticket.id">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">
+                    <div class="font-semibold text-gray-900" x-text="ticket.title"></div>
+                    <div class="text-sm text-gray-600 mt-1" x-text="ticket.description"></div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 text-xs font-medium rounded-full" :class="{
+                        'bg-yellow-100 text-yellow-800': ticket.status === 'pending',
+                        'bg-blue-100 text-blue-800': ticket.status === 'in-progress',
+                        'bg-green-100 text-green-800': ticket.status === 'completed'
+                      }" x-text="ticket.status">
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 text-xs font-medium rounded" :class="{
+                        'bg-red-100 text-red-800': ticket.priority === 'critical',
+                        'bg-orange-100 text-orange-800': ticket.priority === 'high',
+                        'bg-yellow-100 text-yellow-800': ticket.priority === 'medium',
+                        'bg-green-100 text-green-800': ticket.priority === 'low'
+                      }" x-text="ticket.priority">
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-600" x-text="ticket.estimatedTime || 'N/A'"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function app() {
+      return {
+        loading: false,
+        repos: [],
+        projects: [],
+        tickets: [],
+        selectedRepo: null,
+        selectedProject: null,
+        ticketSearch: '',
+        ticketView: 'kanban',
+        ticketSortBy: 'priority',
+        viewingDocument: null,
+        viewingRepoContext: null,
+        viewingRepoContextPage: false,
+        selectedContextItem: null,
+        repoContextItems: [],
+        contextSearchQuery: '',
+
+        get ticketsByStatus() {
+          return {
+            pending: this.tickets.filter(t => t.status === 'pending'),
+            'in-progress': this.tickets.filter(t => t.status === 'in-progress'),
+            completed: this.tickets.filter(t => t.status === 'completed'),
+          };
+        },
+
+        get filteredTicketsByStatus() {
+          const filtered = this.ticketSearch
+            ? this.tickets.filter(t => t.title.toLowerCase().includes(this.ticketSearch.toLowerCase()))
+            : this.tickets;
+
+          return {
+            pending: filtered.filter(t => t.status === 'pending'),
+            'in-progress': filtered.filter(t => t.status === 'in-progress'),
+            completed: filtered.filter(t => t.status === 'completed'),
+          };
+        },
+
+        get filteredContextItems() {
+          let filtered = this.repoContextItems;
+
+          // Filter by search query
+          if (this.contextSearchQuery) {
+            const query = this.contextSearchQuery.toLowerCase();
+            filtered = filtered.filter(item => {
+              const title = (item.title || item.name || item.term || '').toLowerCase();
+              const description = (item.description || item.definition || item.content || '').toLowerCase();
+              return title.includes(query) || description.includes(query);
+            });
+          }
+
+          return filtered;
+        },
+
+        get sortedAndFilteredTickets() {
+          let filtered = this.ticketSearch
+            ? this.tickets.filter(t => t.title.toLowerCase().includes(this.ticketSearch.toLowerCase()))
+            : this.tickets;
+
+          // Sort tickets
+          if (this.ticketSortBy === 'priority') {
+            const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+            filtered = [...filtered].sort((a, b) => {
+              return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+          } else if (this.ticketSortBy === 'createdAt') {
+            filtered = [...filtered].sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+          }
+
+          return filtered;
+        },
+
+        async init() {
+          await this.loadRepos();
+          this.initRouter();
+        },
+
+        initRouter() {
+          // Handle hash changes (back/forward buttons)
+          window.addEventListener('hashchange', () => this.handleRoute());
+          // Handle initial route
+          this.handleRoute();
+        },
+
+        handleRoute() {
+          const hash = window.location.hash.slice(1) || '/';
+          const parts = hash.split('/').filter(p => p);
+
+          if (!parts.length || parts[0] === '') {
+            // Root: show repos
+            this.viewingRepoContextPage = false;
+            this.selectedProject = null;
+            this.selectedRepo = null;
+            return;
+          }
+
+          if (parts[0] === 'repos' && parts[1]) {
+            const repoId = parts[1];
+            const repo = this.repos.find(r => r.id === repoId);
+            if (repo) {
+              if (parts[2] === 'context') {
+                this.showRepoContext(repo, false);
+              } else if (parts[2] === 'projects' && parts[3]) {
+                this.selectRepo(repo, false).then(() => {
+                  const projectId = parts[3];
+                  const project = this.projects.find(p => p.id === projectId);
+                  if (project) {
+                    this.selectProject(project, false);
+                  }
+                });
+              } else {
+                this.selectRepo(repo, false);
+              }
+            }
+          }
+        },
+
+        updateRoute(path) {
+          window.location.hash = path;
+        },
+
+        async loadRepos() {
+          this.loading = true;
+          try {
+            const response = await fetch('/api/repos');
+            this.repos = await response.json();
+          } catch (error) {
+            console.error('Failed to load repos:', error);
+            alert('Failed to load repositories');
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async selectRepo(repo, updateUrl = true) {
+          this.selectedRepo = repo;
+          this.viewingRepoContextPage = false;
+          if (updateUrl) this.updateRoute(`/repos/${repo.id}`);
+          this.loading = true;
+          try {
+            const response = await fetch(`/api/projects/${repo.id}`);
+            this.projects = await response.json();
+          } catch (error) {
+            console.error('Failed to load projects:', error);
+            alert('Failed to load projects');
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async selectProject(project, updateUrl = true) {
+          this.selectedProject = project;
+          if (updateUrl) this.updateRoute(`/repos/${this.selectedRepo.id}/projects/${project.id}`);
+          this.loading = true;
+          this.ticketSearch = '';
+          try {
+            const response = await fetch(`/api/tickets/${project.id}`);
+            this.tickets = await response.json();
+          } catch (error) {
+            console.error('Failed to load tickets:', error);
+            alert('Failed to load tickets');
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async showRepoContext(repo, updateUrl = true) {
+          this.selectedRepo = repo;
+          if (updateUrl) this.updateRoute(`/repos/${repo.id}/context`);
+          this.loading = true;
+          try {
+            const response = await fetch(`/api/context/${repo.id}`);
+            const context = await response.json();
+
+            this.viewingRepoContext = repo;
+            this.repoContextItems = context;
+            this.viewingRepoContextPage = true;
+            this.selectedContextItem = null;
+            this.contextSearchQuery = '';
+          } catch (error) {
+            console.error('Failed to load repo context:', error);
+            alert('Failed to load repository context');
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        viewDocument(document) {
+          this.viewingDocument = document;
+        },
+
+        renderMarkdown(content) {
+          if (!content) return '';
+          try {
+            return marked.parse(content);
+          } catch (error) {
+            console.error('Failed to render markdown:', error);
+            return content;
+          }
+        }
+      };
+    }
+  </script>
+</body>
+
+</html>

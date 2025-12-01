@@ -1,0 +1,11 @@
+{
+  "name": "@bigrack/config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared configuration for BigRack.dev packages",
+  "main": "index.js",
+  "files": [
+    "eslint",
+    "typescript"
+  ]
+}

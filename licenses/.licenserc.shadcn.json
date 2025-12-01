@@ -1,0 +1,34 @@
+{
+  "license": "licenses/license-headers/apache-2.0-shadcn.txt",
+  "licenseFormats": {
+    "ts|tsx|js|jsx": {
+      "prepend": "/*",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    }
+  },
+  "defaultFormat": {
+    "prepend": "/*",
+    "append": " */",
+    "eachLine": {
+      "prepend": " * "
+    }
+  },
+  "ignore": [
+    "**/*",
+    "!apps/dashboard/src/components/ui/**",
+    "!apps/website/components/ui/**",
+    "!packages/shared/src/components/ui/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    "**/*.d.ts",
+    "**/generated/**",
+    "**/*.map"
+  ]
+}

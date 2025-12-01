@@ -1,0 +1,17 @@
+# Generated files
+src/generated/**
+
+# Build output
+dist/**
+
+# Dependencies
+node_modules/**
+
+# Test files
+coverage/**
+*.test.ts
+*.spec.ts
+
+# Config files
+*.config.js
+*.config.ts

@@ -1,0 +1,90 @@
+{
+  "license": ".license-template.txt",
+  "defaultFormat": {
+    "prepend": "/*",
+    "append": "*/\n",
+    "eachLine": {
+      "prepend": " *"
+    }
+  },
+  "licenseFormats": {
+    "js": {
+      "prepend": "/*",
+      "append": "*/\n",
+      "eachLine": {
+        "prepend": " *"
+      }
+    },
+    "ts": {
+      "prepend": "/*",
+      "append": "*/\n",
+      "eachLine": {
+        "prepend": " *"
+      }
+    },
+    "tsx": {
+      "prepend": "/*",
+      "append": "*/\n",
+      "eachLine": {
+        "prepend": " *"
+      }
+    },
+    "jsx": {
+      "prepend": "/*",
+      "append": "*/\n",
+      "eachLine": {
+        "prepend": " *"
+      }
+    }
+  },
+  "files": [
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "scripts/**/*.js"
+  ],
+  "ignore": [
+    "**/node_modules/**",
+    "node_modules/**",
+    "**/node_modules",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    "**/*.d.ts",
+    "**/*.tsbuildinfo",
+    "**/generated/**",
+    "**/prisma/generated/**",
+    "**/src/generated/**",
+    "**/migrations/**/*.sql",
+    "**/models/**",
+    "**/*.config.js",
+    "**/*.config.ts",
+    "**/eslint.config.js",
+    "**/config/eslint/**",
+    "packages/config/**",
+    "**/vite.config.ts",
+    "**/next.config.js",
+    "**/postcss.config.js",
+    "**/tailwind.config.ts",
+    "**/tsconfig*.json",
+    "**/.gitignore",
+    "**/.prettierignore",
+    "**/.prettierrc",
+    "**/.dockerignore",
+    "**/Dockerfile",
+    "**/*.md",
+    "**/*.json",
+    "**/*.sql",
+    "**/*.prisma",
+    "**/*.css",
+    "**/*.html",
+    "**/.DS_Store",
+    "**/NOTICE",
+    "**/LICENSE",
+    "**/THIRD-PARTY-LICENSES.md",
+    "**/.github/**"
+  ]
+}

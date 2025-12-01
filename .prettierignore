@@ -1,0 +1,21 @@
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Cache
+.turbo/
+.cache/
+
+# Documentation (keep original formatting)
+cdc/
+kanban/
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

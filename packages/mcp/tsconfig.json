@@ -1,0 +1,25 @@
+{
+  "extends": "@bigrack/config/typescript/node.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "paths": {
+      "@daemon/*": ["./src/daemon/*"],
+      "@tools/*": ["./src/tools/*"],
+      "@storage/*": ["./src/storage/*"],
+      "@search/*": ["./src/search/*"],
+      "@api/*": ["./src/api/*"],
+      "@crypto/*": ["./src/crypto/*"],
+      "@cli/*": ["./src/cli/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "tests", "models"],
+  "references": [
+    { "path": "../shared" }
+  ]
+}

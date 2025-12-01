@@ -1,0 +1,13 @@
+Dockerfile
+.dockerignore
+.gitignore
+.husky
+.prettierignore
+.prettierrc
+.turbo
+node_modules
+dist
+build
+.next
+out
+logs

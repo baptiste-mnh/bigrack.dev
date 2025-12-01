@@ -1,0 +1,69 @@
+{
+  "name": "bigrack-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BigRack.dev monorepo - MCP server for task/project & context management",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "fresh": "npm run clean && npm install",
+    "dev:mcp": "turbo run dev --filter=@bigrack/mcp",
+    "dev:api": "turbo run dev --filter=@bigrack/api",
+    "dev:dashboard": "turbo run dev --filter=@bigrack/dashboard",
+    "dev:website": "turbo run dev --filter=@bigrack/website",
+    "build:mcp": "turbo run build --filter=@bigrack/mcp",
+    "build:api": "turbo run build --filter=@bigrack/api",
+    "build:dashboard": "turbo run build --filter=@bigrack/dashboard",
+    "build:website": "turbo run build --filter=@bigrack/website",
+    "test:mcp": "turbo run test --filter=@bigrack/mcp",
+    "test:api": "turbo run test --filter=@bigrack/api",
+    "test:dashboard": "turbo run test --filter=@bigrack/dashboard",
+    "link:mcp": "cd packages/mcp && npm link",
+    "unlink:mcp": "npm unlink -g @bigrack/mcp",
+    "licenses:root": "node scripts/generate-third-party-licenses.js root THIRD-PARTY-LICENSES.md",
+    "licenses:mcp": "node scripts/generate-third-party-licenses.js packages/mcp packages/mcp/THIRD-PARTY-LICENSES.md",
+    "licenses:thirdparty": "npm run licenses:root && npm run licenses:mcp",
+    "licenses:add": "license-check-and-add add -f licenses/.licenserc.json",
+    "licenses:add:shadcn": "license-check-and-add add -f licenses/.licenserc.shadcn.json apps/dashboard/src/components/ui apps/website/components/ui packages/shared/src/components/ui",
+    "licenses:check": "license-check-and-add check -f licenses/.licenserc.json",
+    "licenses:check:shadcn": "license-check-and-add check -f licenses/.licenserc.shadcn.json apps/dashboard/src/components/ui apps/website/components/ui packages/shared/src/components/ui",
+    "changeset": "changeset",
+    "changeset:add": "changeset add",
+    "changeset:version": "changeset version",
+    "changeset:status": "changeset status",
+    "version": "changeset version",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "glob": "^10.4.5",
+    "husky": "^9.1.7",
+    "license-check-and-add": "^4.0.5",
+    "prettier": "^3.1.1",
+    "shadcn": "^3.5.0",
+    "turbo": "^2.6.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@11.6.4",
+  "overrides": {
+    "hono": "4.10.7",
+    "valibot": "1.2.0"
+  }
+}
