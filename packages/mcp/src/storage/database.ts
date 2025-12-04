@@ -33,13 +33,25 @@ export function getDatabasePath(): string {
   // Check if DATABASE_URL is set (used in tests)
   if (process.env.DATABASE_URL) {
     // Extract path from DATABASE_URL (format: file:/path/to/db.db)
+    let dbPath: string;
     const url = process.env.DATABASE_URL;
-    if (url.startsWith('file:')) {
-      return url.substring(5); // Remove 'file:' prefix
+    if (url.startsWith('file://')) {
+      dbPath = url.substring(7); // Remove 'file://' prefix
+    } else if (url.startsWith('file:')) {
+      dbPath = url.substring(5); // Remove 'file:' prefix
+    } else {
+      dbPath = url;
     }
-    return url;
+
+    // Resolve relative paths to absolute paths
+    // This ensures the path is consistent regardless of current working directory
+    if (!path.isAbsolute(dbPath)) {
+      dbPath = path.resolve(process.cwd(), dbPath);
+    }
+
+    return dbPath;
   }
-  
+
   return path.join(os.homedir(), '.bigrack', 'bigrack.db');
 }
 
