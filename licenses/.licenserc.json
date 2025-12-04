@@ -49,6 +49,7 @@
     "**/prisma/*.mjs",
     "**/.dockerignore",
     "**/Dockerfile",
+    "**/Dockerfile.npm",
     "**/postcss.config.*",
     "**/tailwind.config.*",
     "**/vite.config.*",
