@@ -14,7 +14,9 @@
 
 // BigRack.dev MCP Daemon
 
-export const version = '0.1.0';
+import { version } from './version';
+
+export { version };
 
 // Export logger
 export * from './logger';

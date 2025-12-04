@@ -1,6 +1,6 @@
 {
   "name": "@bigrack/mcp",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "MCP server for task/project & context management in AI development tools (Claude Code, Cursor)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,6 +11,7 @@
   "files": [
     "dist/**/*",
     "models/**/*",
+    "prisma/**/*",
     "README.md",
     "LICENSE",
     "THIRD-PARTY-LICENSES.md"
@@ -19,10 +20,10 @@
     "@bigrack/shared"
   ],
   "scripts": {
-    "build": "npm run prisma:generate && tsc && npm run copy:scripts && npm run copy:prisma",
+    "build": "node scripts/generate-version.js && npm run prisma:generate && tsc && npm run copy:scripts && npm run copy:prisma",
     "copy:scripts": "mkdir -p dist/scripts && cp src/scripts/*.js dist/scripts/ 2>/dev/null || true",
     "copy:prisma": "cp -r src/generated dist/",
-    "dev": "tsx watch src/daemon/server.ts",
+    "dev": "node scripts/generate-version.js && tsx watch src/daemon/server.ts",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "lint": "eslint src --ext .ts",
