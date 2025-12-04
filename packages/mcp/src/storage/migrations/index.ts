@@ -96,9 +96,9 @@ export function runMigrations(): void {
     // Run prisma migrate deploy
     // This applies all pending migrations without prompting
     // Find prisma binary - try node_modules in package root first, then workspace root
-    const packageRoot = path.join(__dirname, '../../..');
+    const packageRootFromDist = path.join(__dirname, '../../..');
     const workspaceRoot = path.join(__dirname, '../../../../..');
-    let prismaPath = path.join(packageRoot, 'node_modules/.bin/prisma');
+    let prismaPath = path.join(packageRootFromDist, 'node_modules/.bin/prisma');
     if (!fs.existsSync(prismaPath)) {
       prismaPath = path.join(workspaceRoot, 'node_modules/.bin/prisma');
     }
@@ -106,18 +106,34 @@ export function runMigrations(): void {
     // Get Prisma schema path
     const schemaPath = getPrismaSchemaPath();
 
+    // Prisma CLI looks for prisma.config.js in the current working directory
+    // or in the same directory as the schema. We need to change to the package root
+    // where prisma.config.js is located.
+    const schemaDir = path.dirname(schemaPath);
+    const packageRootFromSchema = path.join(schemaDir, '..');
+
+    // Verify prisma.config.js exists in package root
+    const configPath = path.join(packageRootFromSchema, 'prisma.config.js');
+    const workingDir = fs.existsSync(configPath) ? packageRootFromSchema : schemaDir;
+
     // Fallback to npx if prisma binary not found
     const command = fs.existsSync(prismaPath)
       ? `"${prismaPath}" migrate deploy --schema="${schemaPath}"`
       : `npx prisma migrate deploy --schema="${schemaPath}"`;
 
     storageLogger.debug(
-      { command, databaseUrl: process.env.DATABASE_URL },
+      {
+        command,
+        databaseUrl: process.env.DATABASE_URL,
+        workingDir,
+        configPath: fs.existsSync(configPath) ? configPath : 'not found',
+      },
       'Running Prisma Migrate Deploy'
     );
 
     execSync(command, {
       stdio: 'inherit',
+      cwd: workingDir, // Change working directory so Prisma can find prisma.config.js
       env: {
         ...process.env,
         DATABASE_URL: process.env.DATABASE_URL,

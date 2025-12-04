@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import os from 'os';
-import { defineConfig } from 'prisma/config';
+const path = require('path');
+const os = require('os');
 
 // Default database path for CLI/migrations
 const defaultDbPath = path.join(os.homedir(), '.bigrack', 'bigrack.db');
 
-export default defineConfig({
+module.exports = {
   schema: 'prisma/schema.prisma',
   datasource: {
+    // Use DATABASE_URL from env or default to ~/.bigrack/bigrack.db
     url: process.env.DATABASE_URL || `file:${defaultDbPath}`,
   },
-});
+};

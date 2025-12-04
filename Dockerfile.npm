@@ -1,21 +1,64 @@
+# Stage 1: Builder
 FROM node:22-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies for native modules (better-sqlite3)
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @bigrack/mcp
+# Copy the mcp package directory
+COPY packages/mcp /app/packages/mcp
+# Copy shared packages if needed (assuming they are needed for build/pack)
+COPY packages/shared /app/packages/shared
+COPY packages/config /app/packages/config
+# Copy root config
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
+COPY turbo.json /app/turbo.json
 
-RUN bigrack --version
+# Install dependencies and build
+# We need to install dependencies to be able to pack correctly if there are build scripts
+# Skip lifecycle scripts (like husky prepare) during Docker build
+WORKDIR /app/packages/mcp
+# Create the tarball
+RUN npm install --ignore-scripts && npm run build && npm pack
 
+# Stage 2: Final Image
+FROM node:22-slim
+
+WORKDIR /home/node
+
+# Install build dependencies for native modules (better-sqlite3 needs to compile)
+# openssl is required for Prisma
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the tarball from builder
+COPY --from=builder /app/packages/mcp/bigrack-mcp-*.tgz /tmp/bigrack-mcp.tgz
+
+# Install the package globally from the tarball
+# better-sqlite3 will compile during installation
+RUN npm install -g /tmp/bigrack-mcp.tgz && rm /tmp/bigrack-mcp.tgz
+
+# Remove build dependencies to reduce image size (keep python3 and openssl)
+RUN apt-get update && apt-get remove -y make g++ && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Switch to non-root user
 USER node
 ENV USER=bigrack
 
+# Initialize BigRack (this will now run in /home/node without source files pollution)
 RUN bigrack init -y
 
 RUN echo "✅ BigRack database updated successfully!"
+
+# Default command
+CMD ["bigrack", "start"]
